@@ -1,20 +1,12 @@
+<!-- Dizon, Kirsten Dwayne A.
+ CS - 302 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="./analog-clock.svg">
-    <title>Analog Clock</title>
+    <title>Analog Clock with Non-overlapping Tick Marks</title>
     <style>
-    *, *::before, *::after {
-        box-sizing: border-box;
-    }
-
-    * {
-        margin: 0;
-        padding: 0;
-    }
-
     body {
         display: flex;
         justify-content: center;
@@ -29,7 +21,6 @@
         width: 300px;
         height: 300px;
         border-radius: 50%;
-        background-color: #333;
         background: radial-gradient(circle, #e0e0e0, #333);
     }
 
@@ -55,9 +46,43 @@
         transform: rotate(var(--rotation));
         font-size: 1.5rem;
         font-weight: bold;
-        color: #f0f0f0;
+    }
+    
+    .clock .number span {
+        display: inline-block;
+        transform: rotate(calc(-1 * var(--rotation)));
     }
 
+    .number1 span,
+    .number2 span {
+        padding-top: 10px;
+        padding-right: 5px;
+    }
+    .number3 span {
+        padding-right: 15px;
+    }
+    .number4 span,
+    .number8 span  {
+        padding-top: 10px;
+        padding-bottom: 10px;
+    }
+    .number5 span,
+    .number6 span,
+    .number7 span{
+        padding-bottom: 10px;
+
+    }
+    .number9 span {
+        padding-left: 15px;
+    }
+    .number10 span,
+    .number11 span {
+        padding-top: 10px;
+        padding-left: 5px;
+    }
+    .number12 span {
+        padding-top: 10px;
+    }
     .clock .number1 { --rotation: 30deg; }
     .clock .number2 { --rotation: 60deg; }
     .clock .number3 { --rotation: 90deg; }
@@ -83,21 +108,46 @@
     }
 
     .clock .hand.second {
-        width: 3px;
+        width: 2px;
         height: 45%;
         background-color: red;
     }
 
     .clock .hand.minute {
-        width: 7px;
+        width: 4px;
         height: 40%;
         background-color: #333;
     }
 
     .clock .hand.hour {
-        width: 10px;
+        width: 6px;
         height: 35%;
         background-color: #333;
+    }
+
+    .tick {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    .tick::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        background-color: #333;
+    }
+
+    .tick.minute::before {
+        width: 1px;
+        height: 8px;
+    }
+
+    .tick.hour::before {
+        width: 2px;
+        height: 12px;
     }
     </style>
 </head>
@@ -106,39 +156,54 @@
         <div class="hour hand"></div>
         <div class="minute hand"></div>
         <div class="second hand"></div>
-        <div class="number number1">1</div>
-        <div class="number number2">2</div>
-        <div class="number number3">3</div>
-        <div class="number number4">4</div>
-        <div class="number number5">5</div>
-        <div class="number number6">6</div>
-        <div class="number number7">7</div>
-        <div class="number number8">8</div>
-        <div class="number number9">9</div>
-        <div class="number number10">10</div>
-        <div class="number number11">11</div>
-        <div class="number number12">12</div>
+        <div class="number number1"><span>1</span></div>
+        <div class="number number2"><span>2</span></div>
+        <div class="number number3"><span>3</span></div>
+        <div class="number number4"><span>4</span></div>
+        <div class="number number5"><span>5</span></div>
+        <div class="number number6"><span>6</span></div>
+        <div class="number number7"><span>7</span></div>
+        <div class="number number8"><span>8</span></div>
+        <div class="number number9"><span>9</span></div>
+        <div class="number number10"><span>10</span></div>
+        <div class="number number11"><span>11</span></div>
+        <div class="number number12"><span>12</span></div>
     </div>
-</body>
-<script>
+    <script>
     const secondHand = document.querySelector(".hand.second");
     const minuteHand = document.querySelector(".hand.minute");
     const hourHand = document.querySelector(".hand.hour");
+    const clock = document.querySelector(".clock");
+
+    for (let i = 0; i < 60; i++) {
+        const tick = document.createElement("div");
+        tick.classList.add("tick");
+        if (i % 5 === 0) {
+            tick.classList.add("hour");
+        } else {
+            tick.classList.add("minute");
+        }
+        tick.style.transform = `rotate(${i * 6}deg)`;
+        clock.appendChild(tick);
+    }
 
     function setClock() {
-        const date = new Date();
-        const seconds = date.getSeconds() / 60;
-        const minutes = (seconds + date.getMinutes()) / 60;
-        const hours = (minutes + date.getHours()) / 12;
+        const now = new Date();
+        const seconds = now.getSeconds() / 60;
+        const minutes = (now.getMinutes() + seconds) / 60;
+        const hours = (now.getHours() % 12 + minutes) / 12;
         
         setRotation(secondHand, seconds);
         setRotation(minuteHand, minutes);
         setRotation(hourHand, hours);
     }
-    function setRotation(element, degree){
-        element.style.setProperty("--rotation", degree * 360);
+
+    function setRotation(element, rotationRatio) {
+        element.style.setProperty("--rotation", rotationRatio * 360);
     }
+
     setInterval(setClock, 1000);
     setClock();
-</script>
+    </script>
+</body>
 </html>
